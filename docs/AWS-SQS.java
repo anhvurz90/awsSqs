@@ -177,4 +177,63 @@ Amazon Simple Queue Service
 			Thread.sleep(10000L);
 		}
 	}
+	05.06.Receiving and Deleting a Message: {
+		05.06.01.Standard queue: {
+			05.06.01.01.Receive messages: {
+				// Receive messages
+				System.out.println("Receiving messages from MyQueue.\n");
+				final ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(myQueueUrl);
+				final List<Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
+				for (final Message message : messages) {
+				    System.out.println("Message");
+				    System.out.println("  MessageId:     " + message.getMessageId());
+				    System.out.println("  ReceiptHandle: " + message.getReceiptHandle());
+				    System.out.println("  MD5OfBody:     " + message.getMD5OfBody());
+				    System.out.println("  Body:          " + message.getBody());
+				    for (final Entry<String, String> entry : message.getAttributes().entrySet()) {
+					System.out.println("Attribute");
+					System.out.println("  Name:  " + entry.getKey());
+					System.out.println("  Value: " + entry.getValue());
+				    }
+				}
+				System.out.println();			
+			}
+			05.06.01.02.Delete a Message: {
+				// Delete the message
+				System.out.println("Deleting a message.\n");
+				final String messageReceiptHandle = messages.get(0).getReceiptHandle();
+				sqs.deleteMessage(new DeleteMessageRequest(myQueueUrl, messageReceiptHandle));
+			}
+		}
+		05.06.02.FIFO queue: {
+			05.06.02.01.Receive messages: {
+				// Receive messages
+				System.out.println("Receiving messages from MyFifoQueue.fifo.\n");
+				final ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(myQueueUrl);
+
+				// Uncomment the following to provide the ReceiveRequestDeduplicationId
+				//receiveMessageRequest.setReceiveRequestAttemptId("1");
+				final List<Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
+				for (final Message message : messages) {
+				    System.out.println("Message");
+				    System.out.println("  MessageId:     " + message.getMessageId());
+				    System.out.println("  ReceiptHandle: " + message.getReceiptHandle());
+				    System.out.println("  MD5OfBody:     " + message.getMD5OfBody());
+				    System.out.println("  Body:          " + message.getBody());
+				    for (final Entry<String, String> entry : message.getAttributes().entrySet()) {
+					System.out.println("Attribute");
+					System.out.println("  Name:  " + entry.getKey());
+					System.out.println("  Value: " + entry.getValue());
+				    }
+				}
+				System.out.println();				
+			}
+			05.06.02.02.Delete a Message: {
+				// Delete the message
+				System.out.println("Deleting the message.\n");
+				final String messageReceiptHandle = messages.get(0).getReceiptHandle();
+				sqs.deleteMessage(new DeleteMessageRequest(myQueueUrl, messageReceiptHandle));				
+			}
+		}
+	}
 }
